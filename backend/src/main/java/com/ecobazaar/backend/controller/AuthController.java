@@ -27,12 +27,18 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
-    // ================= SIGNUP =================
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupRequest request) {
-        authService.register(request);
-        return ResponseEntity.ok("User Registered Successfully");
+    // ================= REGISTER =================
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody SignupRequest request) {
+        try {
+            authService.register(request);
+            return ResponseEntity.ok("User Registered Successfully");
+        } catch (RuntimeException ex) {
+            // Return a clear 400 response with validation message
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
+
 
     // ================= LOGIN =================
     @PostMapping("/login")

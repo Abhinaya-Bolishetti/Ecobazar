@@ -20,7 +20,7 @@ function AuthPage({ setIsAuth }) {
     }
 
     try {
-      const res = await API.post("/api/auth/login", {
+      const res = await API.post("/auth/login", {
         username,
         password,
       });
@@ -46,7 +46,7 @@ function AuthPage({ setIsAuth }) {
     }
 
     try {
-      const res = await API.post("/api/auth/signup", {
+      const res = await API.post("/auth/register", {
         username,
         email,
         password,
