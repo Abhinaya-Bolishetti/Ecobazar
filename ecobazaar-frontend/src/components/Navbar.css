@@ -1,0 +1,16 @@
+.navbar {
+  display: flex;
+  gap: 16px;
+  padding: 12px 20px;
+  background-color: #1f7a5c;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}

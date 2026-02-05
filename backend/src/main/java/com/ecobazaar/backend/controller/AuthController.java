@@ -11,6 +11,8 @@ import com.ecobazaar.backend.repository.UserRepository;
 import com.ecobazaar.backend.security.JwtUtil;
 import com.ecobazaar.backend.service.AuthService;
 
+@CrossOrigin(origins = "http://localhost:3000")
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

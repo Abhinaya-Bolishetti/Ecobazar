@@ -36,11 +36,17 @@ public class AuthService {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(encoder.encode(request.getPassword()));
-        user.setRole("USER");
+
+        // ✅ role handling
+        String role = request.getRole();
+        if (role != null && role.equalsIgnoreCase("SELLER")) {
+            user.setRole("SELLER");
+        } else {
+            user.setRole("USER");
+        }
 
         return userRepository.save(user);
     }
-
     // ===== LOGIN =====
     public boolean validatePassword(String raw, String encoded) {
         return encoder.matches(raw, encoded);
