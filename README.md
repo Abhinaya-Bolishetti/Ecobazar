@@ -36,3 +36,35 @@ EcoBazaar is a full-stack web application designed to promote sustainable shoppi
 
 ## 📁 Project Structure
 
+Ecobazaar/
+├── backend/ # Spring Boot Backend
+│ ├── src/main/java
+│ ├── src/main/resources
+│ └── uploads/ # (ignored in git)
+└── ecobazaar-frontend/ # React Frontend
+├── src/
+├── public/
+└── package.json
+
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1️⃣ Backend Setup
+
+```bash
+cd backend
+mvn spring-boot:run
+
+Configure application.properties with your MySQL credentials.
+
+
+2️⃣ Frontend Setup
+cd ecobazaar-frontend
+npm install
+npm start
+
+
+Frontend runs at: http://localhost:3000
+Backend runs at: http://localhost:8082
