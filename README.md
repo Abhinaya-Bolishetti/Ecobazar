@@ -1,4 +1,3 @@
-```md
 # 🌱 EcoBazaar – Carbon Footprint Aware Shopping Assistant
 
 EcoBazaar is a full-stack web application designed to promote sustainable shopping by showcasing eco-friendly products along with their carbon impact and eco-certification status. The platform supports role-based access where sellers can upload products and users can browse eco-friendly alternatives.
@@ -118,6 +117,3 @@ GitHub: [https://github.com/Abhinaya-Bolishetti](https://github.com/Abhinaya-Bol
 
 This project is for academic and learning purposes.
 
-````
-
----
