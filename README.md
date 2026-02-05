@@ -1,42 +1,38 @@
-# 🌱 EcoBazar
+# 🌱 EcoBazaar – Carbon Footprint Aware Shopping Assistant
 
-EcoBazar is a sustainable e-commerce platform that promotes eco-friendly products and responsible consumption.
-
----
-
-## 🚀 Project Status
-🔧 In Development (Milestone 1 Completed)
+EcoBazaar is a full-stack web application designed to promote sustainable shopping by showcasing eco-friendly products along with their carbon impact and eco-certification status. The platform supports role-based access where sellers can upload products and users can browse eco-friendly alternatives.
 
 ---
 
-## 🧩 Tech Stack
+## 🚀 Features
 
-### Backend
-- Java 17
-- Spring Boot
-- Spring Data JPA
-- Spring Security
-- MySQL
-- JWT Authentication
+- 🔐 User Authentication (Register & Login) using JWT
+- 🧑‍💼 Role-Based Access (USER, SELLER)
+- 🛍️ Product Listing with:
+  - Name, description, price
+  - Carbon impact
+  - Eco-certified badge
+  - Product images (file upload)
+- 📦 Seller-only Product Upload
+- 🌐 Public Product Browsing
+- 🧭 Responsive Frontend UI
 
-### Frontend
-- React (Vite)
+---
+
+## 🛠️ Tech Stack
+
+**Backend**
+- Java, Spring Boot
+- Spring Security + JWT Authentication
+- MySQL Database
+- Hibernate / JPA
+
+**Frontend**
+- React.js
 - Axios
-- React Router
+- React Router DOM
 
 ---
 
-## 🔐 Features Implemented (Milestone 1)
+## 📁 Project Structure
 
-### User Management
-- User Registration
-- User Login
-- Encrypted Passwords (BCrypt)
-- Role-based users (USER, SELLER, ADMIN)
-
-### Security
-- Spring Security integration
-- Protected endpoints
-- JWT-ready authentication flow
-
----
