@@ -1,62 +1,42 @@
-import { useEffect, useState } from "react";
-import api from "../api/api";
+import React, { useEffect, useState } from "react";
+import api from "../api/api"; // Corrected path
+import ProductCard from "../components/ProductCard";
 
-function Products() {
+const Products = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
     api
       .get("/api/products")
       .then((res) => setProducts(res.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Failed to fetch products", err));
   }, []);
+
+  const handleAddToCart = async (id) => {
+    try {
+      await api.post(`/api/cart/add/${id}`);
+      alert("Added to Smart Cart!");
+    } catch (err) {
+      alert("Login required to add items to cart.");
+    }
+  };
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Products</h2>
-
-      {products.length === 0 && <p>No products found.</p>}
-
+      <h2 style={{ color: "#2e7d32" }}>Eco-Friendly Catalog</h2>
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-          gap: "16px",
+          gap: "20px",
         }}
       >
         {products.map((p) => (
-          <div
-            key={p.id}
-            style={{
-              border: "1px solid #ddd",
-              padding: "12px",
-              borderRadius: "8px",
-            }}
-          >
-            {p.imageUrl && (
-              <img
-                src={`http://localhost:8082${p.imageUrl}`}
-                alt={p.name}
-                style={{
-                  width: "100%",
-                  height: "180px",
-                  objectFit: "cover",
-                  borderRadius: "6px",
-                }}
-              />
-            )}
-            <h3>{p.name}</h3>
-            <p>{p.description}</p>
-            <p>
-              <b>₹{p.price}</b>
-            </p>
-            <p>Carbon Impact: {p.carbonImpact}</p>
-            <p>{p.ecoCertified ? "🌱 Eco Certified" : "Not Eco Certified"}</p>
-          </div>
+          <ProductCard key={p.id} product={p} onAddToCart={handleAddToCart} />
         ))}
       </div>
     </div>
   );
-}
+};
 
 export default Products;

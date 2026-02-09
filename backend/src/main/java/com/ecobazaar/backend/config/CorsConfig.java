@@ -13,33 +13,24 @@ public class CorsConfig {
 
     @Bean
     public CorsFilter corsFilter() {
-
         CorsConfiguration config = new CorsConfiguration();
 
-        // ✅ Allow React frontend
+        // React frontend
         config.setAllowedOrigins(List.of("http://localhost:3000"));
 
-        // ✅ Allow required headers
-        config.setAllowedHeaders(List.of(
-                "Authorization",
-                "Content-Type"
-        ));
+        // Allow all headers (avoids CORB issues)
+        config.setAllowedHeaders(List.of("*"));
 
-        // ✅ Allow required HTTP methods
-        config.setAllowedMethods(List.of(
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "OPTIONS"
-        ));
+        // Allow all required methods
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        // ✅ Allow JWT token
+        // Allow JWT cookies/headers
         config.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
+        // Expose Authorization header to frontend
+        config.setExposedHeaders(List.of("Authorization"));
 
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
         return new CorsFilter(source);

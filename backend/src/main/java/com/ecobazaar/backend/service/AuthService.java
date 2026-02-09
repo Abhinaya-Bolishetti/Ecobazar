@@ -1,11 +1,10 @@
 package com.ecobazaar.backend.service;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.ecobazaar.backend.dto.SignupRequest;
 import com.ecobazaar.backend.model.User;
 import com.ecobazaar.backend.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
@@ -17,37 +16,19 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    // ===== SIGNUP =====
     public User register(SignupRequest request) {
-
-        if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new RuntimeException("Passwords do not match");
-        }
-
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
-        }
-
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
-        }
-
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(encoder.encode(request.getPassword()));
-
-        // ✅ role handling
-        String role = request.getRole();
-        if (role != null && role.equalsIgnoreCase("SELLER")) {
-            user.setRole("SELLER");
-        } else {
-            user.setRole("USER");
-        }
-
+        
+        // Formats role for Spring Security (e.g., "ROLE_SELLER")
+        String role = (request.getRole() != null) ? request.getRole().toUpperCase() : "USER";
+        user.setRole("ROLE_" + role);
+        
         return userRepository.save(user);
     }
-    // ===== LOGIN =====
+
     public boolean validatePassword(String raw, String encoded) {
         return encoder.matches(raw, encoded);
     }

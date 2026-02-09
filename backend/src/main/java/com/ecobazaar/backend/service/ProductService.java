@@ -21,22 +21,19 @@ public class ProductService {
 
     private final String UPLOAD_DIR = "uploads/";
 
-    public ProductService(ProductRepository productRepository,
-                          UserRepository userRepository) {
+    public ProductService(ProductRepository productRepository, UserRepository userRepository) {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
     }
 
     public Product addProduct(String name, String description, double price,
-                              double carbonImpact, boolean ecoCertified,
-                              MultipartFile image) throws Exception {
+                             double carbonImpact, boolean ecoCertified,
+                             MultipartFile image) throws Exception {
 
-        // get logged in seller
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User seller = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Seller not found"));
 
-        // save image
         Files.createDirectories(Paths.get(UPLOAD_DIR));
         String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
         Path filePath = Paths.get(UPLOAD_DIR + fileName);
@@ -49,12 +46,38 @@ public class ProductService {
         p.setCarbonImpact(carbonImpact);
         p.setEcoCertified(ecoCertified);
         p.setImageUrl("/uploads/" + fileName);
-        p.setSeller(seller);
+        
+        // ✅ This will no longer be red if you updated the Product model
+        p.setSeller(seller); 
 
         return productRepository.save(p);
     }
 
     public List<Product> getAll() {
         return productRepository.findAll();
+    }
+
+    public Product updateProduct(Long id, Product updated) {
+        Product p = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        p.setName(updated.getName());
+        p.setDescription(updated.getDescription());
+        p.setPrice(updated.getPrice());
+        p.setCarbonImpact(updated.getCarbonImpact());
+        
+        // ✅ Boolean getters in Java start with 'is', not 'get'
+        p.setEcoCertified(updated.isEcoCertified()); 
+
+        return productRepository.save(p);
+    }
+
+    public void deleteById(Long id) {
+        productRepository.deleteById(id);
+    }
+
+    public List<Product> getGreenerAlternatives(Double maxCarbon) {
+        // ✅ Matches the method name in ProductRepository
+        return productRepository.findByCarbonImpactLessThanAndEcoCertifiedTrue(maxCarbon);
     }
 }

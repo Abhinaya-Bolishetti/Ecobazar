@@ -1,90 +1,52 @@
 package com.ecobazaar.backend.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import com.ecobazaar.backend.dto.AuthResponse;
-import com.ecobazaar.backend.dto.LoginRequest;
 import com.ecobazaar.backend.dto.SignupRequest;
 import com.ecobazaar.backend.model.User;
 import com.ecobazaar.backend.repository.UserRepository;
 import com.ecobazaar.backend.security.JwtUtil;
 import com.ecobazaar.backend.service.AuthService;
-
-@CrossOrigin(origins = "http://localhost:3000")
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
     private final AuthService authService;
-    private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public AuthController(AuthService authService,
-                          UserRepository userRepository,
-                          JwtUtil jwtUtil) {
+    public AuthController(AuthService authService, JwtUtil jwtUtil, UserRepository userRepository) {
         this.authService = authService;
-        this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
     }
 
-    // ================= REGISTER =================
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody SignupRequest request) {
-        try {
-            authService.register(request);
-            return ResponseEntity.ok("User Registered Successfully");
-        } catch (RuntimeException ex) {
-            // Return a clear 400 response with validation message
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
+        return ResponseEntity.ok(authService.register(request));
     }
 
-
-    // ================= LOGIN =================
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
+        String username = body.get("username");
+        String password = body.get("password");
 
-        User user = userRepository
-                .findByUsername(request.getUsername())
-                .orElse(null);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (user == null) {
-            return ResponseEntity.status(401).body("User not found");
+        if (!authService.validatePassword(password, user.getPassword())) {
+            return ResponseEntity.status(401).body("Invalid credentials");
         }
 
-        if (!authService.validatePassword(
-                request.getPassword(),
-                user.getPassword())) {
-            return ResponseEntity.status(401).body("Invalid password");
-        }
+        String token = jwtUtil.generateToken(username, user.getRole());
 
-        String token = jwtUtil.generateToken(user.getUsername());
-        return ResponseEntity.ok(new AuthResponse(token));
-    }
-
-    // ================= TOKEN TEST =================
-    @GetMapping("/test")
-    public ResponseEntity<?> testToken(
-            @RequestHeader("Authorization") String authHeader) {
-
-        // Remove "Bearer "
-        String token = authHeader.substring(7);
-
-        // Extract username from token
-        String username = jwtUtil.extractUsername(token);
-
-        User user = userRepository.findByUsername(username).orElse(null);
-
-        if (user == null) {
-            return ResponseEntity.status(401).body("User not found");
-        }
-
-        return ResponseEntity.ok(
-                "Username: " + user.getUsername() +
-                ", Email: " + user.getEmail() +
-                ", Role: " + user.getRole()
-        );
+        return ResponseEntity.ok(Map.of(
+                "token", token,
+                "role", user.getRole(),
+                "username", user.getUsername()
+        ));
     }
 }

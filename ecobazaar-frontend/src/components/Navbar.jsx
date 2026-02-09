@@ -1,21 +1,44 @@
-import { Link } from "react-router-dom";
-import "./Navbar.css"; // optional if you create separate css
+import { Link, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 function Navbar() {
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
+
+  let role = null;
+  if (token) {
+    try {
+      role = jwtDecode(token).role;
+    } catch {}
+  }
 
   const logout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/";
+    navigate("/");
   };
 
   return (
-    <div className="navbar">
-      <Link to="/">Login</Link>
-      <Link to="/register">Register</Link>
+    <div style={{ padding: 10, background: "#1f7a5b", color: "white" }}>
+      <Link to="/">Login</Link> | <Link to="/register">Register</Link> |{" "}
       <Link to="/products">Products</Link>
-      <Link to="/add-product">Add Product</Link>
-
+      {role === "SELLER" && (
+        <>
+          {" "}
+          | <Link to="/add-product">Add Product</Link>
+        </>
+      )}
+      {token && (
+        <>
+          {" "}
+          | <Link to="/cart">Cart</Link>
+        </>
+      )}
+      {token && (
+        <>
+          {" "}
+          | <Link to="/wishlist">Wishlist</Link>
+        </>
+      )}
       {token && (
         <button onClick={logout} style={{ marginLeft: 20 }}>
           Logout

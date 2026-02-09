@@ -1,39 +1,56 @@
 package com.ecobazaar.backend.controller;
 
 import com.ecobazaar.backend.model.Product;
-import com.ecobazaar.backend.service.ProductService;
-import org.springframework.http.MediaType;
+import com.ecobazaar.backend.repository.ProductRepository;
+import com.ecobazaar.backend.service.CarbonCalculationService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductRepository productRepository;
+    private final CarbonCalculationService carbonService;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
+    public ProductController(ProductRepository productRepository, CarbonCalculationService carbonService) {
+        this.productRepository = productRepository;
+        this.carbonService = carbonService;
     }
 
-    // ✅ Upload product with image (SELLER only)
-    @PreAuthorize("hasRole('SELLER')")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Product addProduct(
-            @RequestParam("name") String name,
-            @RequestParam("description") String description,
-            @RequestParam("price") double price,
-            @RequestParam("carbonImpact") double carbonImpact,
-            @RequestParam("ecoCertified") boolean ecoCertified,
-            @RequestParam("image") MultipartFile image
-    ) throws Exception {
-        return productService.addProduct(name, description, price, carbonImpact, ecoCertified, image);
-    }
-
-    // ✅ Public get products
     @GetMapping
-    public java.util.List<Product> getAllProducts() {
-        return productService.getAll();
+    public List<Product> getAll() {
+        return productRepository.findAll();
+    }
+
+    // ✅ Milestone 2: Add Product with Eco-Rating
+    @PostMapping
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+        int rating = carbonService.calculateEcoRating(product.getCarbonImpact(), product.isEcoCertified());
+        product.setEcoRating(rating);
+        return ResponseEntity.ok(productRepository.save(product));
+    }
+
+    // ✅ Product Discovery: Search by Name
+    @GetMapping("/search")
+    public List<Product> search(@RequestParam String query) {
+        return productRepository.findByNameContainingIgnoreCase(query);
+    }
+
+    // ✅ Eco-rating & Filtering
+    @GetMapping("/filter")
+    public List<Product> filterByEco(@RequestParam int minRating) {
+        return productRepository.findByEcoRatingGreaterThanEqual(minRating);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
+        productRepository.deleteById(id);
+        return ResponseEntity.ok("Product removed");
     }
 }

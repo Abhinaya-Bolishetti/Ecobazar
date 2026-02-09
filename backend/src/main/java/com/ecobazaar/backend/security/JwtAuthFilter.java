@@ -42,7 +42,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String username = jwtUtil.extractUsername(token);
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
                     User user = userRepository.findByUsername(username)
                             .orElseThrow(() -> new RuntimeException("User not found: " + username));
 
@@ -56,7 +55,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             } catch (Exception e) {
-                // Invalid/expired token -> user remains unauthenticated
+                // ignore invalid token
             }
         }
 

@@ -9,7 +9,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // We use the full path you provided. 
+        // The "file:///" prefix is required for Windows absolute paths.
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/");
+                .addResourceLocations("file:///C:/Users/User/OneDrive/Desktop/ecobazaar-project-main/backend/uploads/");
     }
 }

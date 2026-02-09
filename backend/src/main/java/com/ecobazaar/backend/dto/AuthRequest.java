@@ -1,6 +1,6 @@
 package com.ecobazaar.backend.dto;
 
-public class LoginRequest {
+public class AuthRequest {
     private String username;
     private String password;
 
