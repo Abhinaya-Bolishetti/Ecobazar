@@ -3,33 +3,35 @@ package com.ecobazaar.backend.service;
 import com.ecobazaar.backend.dto.SignupRequest;
 import com.ecobazaar.backend.model.User;
 import com.ecobazaar.backend.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    @Autowired
+    private UserRepository userRepository;
 
-    public AuthService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    public User register(SignupRequest request) {
+    public String register(SignupRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email is already taken!");
+        }
+
         User user = new User();
-        user.setUsername(request.getUsername());
+        user.setUsername(request.getEmail());
         user.setEmail(request.getEmail());
-        user.setPassword(encoder.encode(request.getPassword()));
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole());
         
-        // Formats role for Spring Security (e.g., "ROLE_SELLER")
-        String role = (request.getRole() != null) ? request.getRole().toUpperCase() : "USER";
-        user.setRole("ROLE_" + role);
-        
-        return userRepository.save(user);
+        userRepository.save(user);
+        return "User registered successfully";
     }
 
-    public boolean validatePassword(String raw, String encoded) {
-        return encoder.matches(raw, encoded);
+    public boolean validatePassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }

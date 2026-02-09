@@ -56,5 +56,65 @@ const ProductList = () => {
     </div>
   );
 };
+// ecobazaar-frontend/src/pages/Products.jsx (or ProductList.jsx)
+
+const ProductCard = ({ product, userRole }) => {
+  const addToWishlist = async (id) => {
+    try {
+      await api.post(`/api/wishlist/add/${id}`);
+      alert("Added to Wishlist!");
+    } catch (err) {
+      alert("Error adding to wishlist");
+    }
+  };
+
+  const deleteProduct = async (id) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      try {
+        await api.delete(`/api/products/${id}`);
+        window.location.reload(); // Refresh to show changes
+      } catch (err) {
+        alert("Delete failed");
+      }
+    }
+  };
+
+  return (
+    <div className="product-card">
+      <img
+        src={`http://localhost:8082${product.imageUrl}`}
+        alt={product.name}
+      />
+      <h3>{product.name}</h3>
+
+      {/* Wishlist Button */}
+      <button
+        onClick={() => addToWishlist(product.id)}
+        style={{ background: "#ffc107" }}
+      >
+        ❤️ Wishlist
+      </button>
+
+      {/* Seller Specific Actions */}
+      {userRole === "SELLER" && (
+        <div className="seller-actions">
+          <button
+            onClick={() =>
+              (window.location.href = `/edit-product/${product.id}`)
+            }
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => deleteProduct(product.id)}
+            style={{ background: "red", color: "white" }}
+          >
+            Delete
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default ProductList;

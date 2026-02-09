@@ -72,7 +72,11 @@ public class ProductService {
         return productRepository.save(p);
     }
 
-    public void deleteById(Long id) {
+ // Inside ProductService.java
+    public void deleteProduct(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new RuntimeException("Product not found with id: " + id);
+        }
         productRepository.deleteById(id);
     }
 
