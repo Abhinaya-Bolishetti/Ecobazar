@@ -87,12 +87,3 @@ npm run dev
 * Carbon savings analytics dashboard
 * Admin panel for product moderation
 * Recommendation system for eco-friendly alternatives
-
----
-
-
-## 📜 License
-
-This project is developed for academic and learning purposes.
-
-````
