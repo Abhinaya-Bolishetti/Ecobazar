@@ -1,9 +1,11 @@
 package com.ecobazaar.backend.repository;
 
 import com.ecobazaar.backend.model.Order;
+import com.ecobazaar.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
-@Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
+    // This allows OrderHistoryService to filter by the logged-in user
+    List<Order> findByUser(User user);
 }

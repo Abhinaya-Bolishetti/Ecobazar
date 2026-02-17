@@ -1,46 +1,25 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f7fb;
-  margin: 0;
-  padding: 0;
-}
-
-.container {
-  max-width: 900px;
-  margin: 40px auto;
-  background: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-input,
-select,
 button {
-  padding: 8px;
-  margin: 6px 0;
-  width: 100%;
-}
-
-button {
-  background-color: #2ecc71;
-  border: none;
-  color: white;
-  cursor: pointer;
-  border-radius: 4px;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 button:hover {
-  background-color: #27ae60;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.navbar {
-  background: #1e293b;
-  padding: 12px;
-}
-
-.navbar a {
-  color: white;
-  margin-right: 15px;
+a {
   text-decoration: none;
+  color: inherit;
+}
+
+input,
+textarea {
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #2e7d32;
 }

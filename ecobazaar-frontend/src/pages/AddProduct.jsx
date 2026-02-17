@@ -1,120 +1,151 @@
 import React, { useState } from "react";
-import api from "../api/api"; // Corrected path
+import api from "../api/api";
 import { useNavigate } from "react-router-dom";
 
 const AddProduct = () => {
+  const navigate = useNavigate();
+  const [file, setFile] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    price: "",
-    carbonImpact: "",
+    price: 0,
+    carbonImpact: 0,
     ecoCertified: false,
+    category: "General",
   });
-  const [image, setImage] = useState(null);
-  const navigate = useNavigate();
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!file) return alert("Upload an image!");
+
     const data = new FormData();
-    data.append("name", formData.name);
-    data.append("description", formData.description);
-    data.append("price", formData.price);
-    data.append("carbonImpact", formData.carbonImpact);
-    data.append("ecoCertified", formData.ecoCertified);
-    data.append("image", image);
+    data.append("image", file);
+    data.append("product", JSON.stringify(formData));
 
     try {
-      await api.post("/api/products", data, {
-        headers: { "Content-Type": "multipart/form-data" },
+      await api.post("/products/add", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-      alert("Product added successfully!");
-      navigate("/products");
+      alert("✅ Product Published Successfully!");
+      navigate("/seller-dashboard");
     } catch (err) {
-      alert("Error adding product. Ensure you are logged in as a SELLER.");
+      console.error(err);
+      alert("❌ Failed to add product.");
     }
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "500px",
-        margin: "40px auto",
-        padding: "20px",
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-      }}
-    >
-      <h2>Add New Eco-Product</h2>
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: "flex", flexDirection: "column", gap: "15px" }}
-      >
-        <input
-          type="text"
-          placeholder="Product Name"
-          style={inputStyle}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          required
-        />
-        <textarea
-          placeholder="Description"
-          style={inputStyle}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
-        />
-        <input
-          type="number"
-          placeholder="Price"
-          style={inputStyle}
-          onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-          required
-        />
-        <input
-          type="number"
-          step="0.1"
-          placeholder="Carbon Impact (kg CO2e)"
-          style={inputStyle}
-          onChange={(e) =>
-            setFormData({ ...formData, carbonImpact: e.target.value })
-          }
-          required
-        />
-        <label>
+    <div style={pageBg}>
+      <div style={card}>
+        <img src="/logo.png" alt="EcoBazaar" style={logo} />
+
+        <h2 style={title}>Add New Eco-Product</h2>
+
+        <form onSubmit={handleSubmit} style={form}>
           <input
-            type="checkbox"
-            onChange={(e) =>
-              setFormData({ ...formData, ecoCertified: e.target.checked })
-            }
-          />{" "}
-          Eco-Certified
-        </label>
-        <input
-          type="file"
-          onChange={(e) => setImage(e.target.files[0])}
-          required
-        />
-        <button
-          type="submit"
-          style={{
-            backgroundColor: "#2e7d32",
-            color: "white",
-            padding: "10px",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Upload Product
-        </button>
-      </form>
+            name="name"
+            placeholder="Product Name"
+            onChange={handleInputChange}
+            required
+            style={input}
+          />
+          <textarea
+            name="description"
+            placeholder="Description"
+            onChange={handleInputChange}
+            style={input}
+          />
+          <input
+            name="price"
+            type="number"
+            placeholder="Price (₹)"
+            onChange={handleInputChange}
+            required
+            style={input}
+          />
+          <input
+            name="carbonImpact"
+            type="number"
+            placeholder="CO₂ Impact (kg)"
+            onChange={handleInputChange}
+            required
+            style={input}
+          />
+
+          <label style={checkboxRow}>
+            <input
+              name="ecoCertified"
+              type="checkbox"
+              onChange={handleInputChange}
+            />
+            🌿 Eco-Certified Product
+          </label>
+
+          <label style={label}>Product Image</label>
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files[0])}
+            required
+          />
+
+          <button type="submit" style={primaryBtn}>
+            List Product
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
 
-const inputStyle = {
-  padding: "8px",
+const pageBg = {
+  minHeight: "100vh",
+  background: "#f3f8f5",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+};
+
+const card = {
+  background: "#fff",
+  padding: "40px",
+  borderRadius: "16px",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+  width: "100%",
+  maxWidth: "420px",
+  textAlign: "center",
+};
+
+const logo = { width: "70px", marginBottom: "10px" };
+const title = { color: "#2e7d32", marginBottom: "20px" };
+const form = { display: "flex", flexDirection: "column", gap: "12px" };
+const input = {
+  padding: "12px",
+  borderRadius: "8px",
   border: "1px solid #ccc",
-  borderRadius: "4px",
+};
+const label = { textAlign: "left", fontWeight: 600 };
+const checkboxRow = {
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  justifyContent: "center",
+};
+const primaryBtn = {
+  marginTop: "10px",
+  padding: "12px",
+  background: "#2e7d32",
+  color: "#fff",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer",
+  fontWeight: 600,
 };
 
 export default AddProduct;

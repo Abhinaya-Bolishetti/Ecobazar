@@ -1,43 +1,95 @@
 package com.ecobazaar.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import java.util.Date;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    // Many orders belong to one user
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore   // ✅ Prevent infinite JSON loop when returning orders
     private User user;
 
-    private double totalAmount;
+    private double totalPrice;
+
+    // Standardized carbon field
+    @Column(name = "total_carbon_impact")
     private double totalCarbonImpact;
 
-    // ✅ ADD THIS FIELD
-    private String status; 
+    private LocalDateTime orderDate = LocalDateTime.now();
 
-    private Date orderDate = new Date();
+    private String status = "PENDING";
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Order has multiple items
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_id") // creates FK in order_items table
+    private List<OrderItem> items;
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    // ---- Getters & Setters ----
 
-    public double getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
+    public Long getId() {
+        return id;
+    }
 
-    public double getTotalCarbonImpact() { return totalCarbonImpact; }
-    public void setTotalCarbonImpact(double totalCarbonImpact) { this.totalCarbonImpact = totalCarbonImpact; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    // ✅ ADD THESE METHODS
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public User getUser() {
+        return user;
+    }
 
-    public Date getOrderDate() { return orderDate; }
-    public void setOrderDate(Date orderDate) { this.orderDate = orderDate; }
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public double getTotalCarbonImpact() {
+        return totalCarbonImpact;
+    }
+
+    public void setTotalCarbonImpact(double totalCarbonImpact) {
+        this.totalCarbonImpact = totalCarbonImpact;
+    }
+
+    public LocalDateTime getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDateTime orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
+    }
 }

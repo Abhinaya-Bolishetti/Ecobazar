@@ -1,52 +1,49 @@
 package com.ecobazaar.backend.controller;
 
-import com.ecobazaar.backend.dto.SignupRequest;
+import com.ecobazaar.backend.dto.*;
 import com.ecobazaar.backend.model.User;
 import com.ecobazaar.backend.repository.UserRepository;
-import com.ecobazaar.backend.security.JwtUtil;
 import com.ecobazaar.backend.service.AuthService;
+import com.ecobazaar.backend.security.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
-    private final AuthService authService;
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
-
-    public AuthController(AuthService authService, JwtUtil jwtUtil, UserRepository userRepository) {
-        this.authService = authService;
-        this.jwtUtil = jwtUtil;
-        this.userRepository = userRepository;
-    }
+    @Autowired private AuthService authService;
+    @Autowired private UserRepository userRepository;
+    @Autowired private JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody SignupRequest request) {
-        return ResponseEntity.ok(authService.register(request));
+    public ResponseEntity<?> register(@RequestBody SignupRequest signupRequest) {
+        try {
+            authService.registerUser(signupRequest);
+            return ResponseEntity.ok("User registered successfully! Please wait for Admin approval if you are a seller.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());
+        }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
-        String username = body.get("username");
-        String password = body.get("password");
-
-        User user = userRepository.findByUsername(username)
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        User user = userRepository.findByEmail(loginRequest.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!authService.validatePassword(password, user.getPassword())) {
+        // 🛡️ GATEKEEPER CHECK: 
+        // If they are a seller and NOT approved, block the login.
+        if ("SELLER".equalsIgnoreCase(user.getRole()) && !"APPROVED".equalsIgnoreCase(user.getStatus())) {
+            return ResponseEntity.status(403).body("Your seller account is pending admin approval.");
+        }
+
+        if (!authService.validatePassword(loginRequest.getPassword(), user.getPassword())) {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
 
-        String token = jwtUtil.generateToken(username, user.getRole());
-
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "role", user.getRole(),
-                "username", user.getUsername()
-        ));
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+        return ResponseEntity.ok(new AuthResponse(token, user.getRole()));
     }
 }

@@ -5,17 +5,19 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "wishlist_items")
 public class WishlistItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 
-    // Getters and Setters
     public Long getId() { return id; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

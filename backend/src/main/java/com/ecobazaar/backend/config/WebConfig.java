@@ -9,6 +9,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:///C:/Users/User/OneDrive/Desktop/ecobazaar-project-main/backend/uploads/");
+                .addResourceLocations("file:uploads/");
     }
 }

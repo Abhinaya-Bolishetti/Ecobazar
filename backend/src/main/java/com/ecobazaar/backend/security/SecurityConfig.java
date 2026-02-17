@@ -2,22 +2,21 @@ package com.ecobazaar.backend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.http.HttpMethod;
+import java.util.List;
 
 @Configuration
-@EnableMethodSecurity
 public class SecurityConfig {
 
-    // 1. Declare the filter variable
     private final JwtAuthFilter jwtAuthFilter;
 
-    // 2. Inject it via Constructor (This fixes the "cannot find symbol" error)
     public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
     }
@@ -28,18 +27,42 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-            .cors(cors -> {})
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(request -> {
+                CorsConfiguration cfg = new CorsConfiguration();
+                cfg.setAllowedOrigins(List.of("http://localhost:3000"));
+                cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                cfg.setAllowedHeaders(List.of("*"));
+                cfg.setAllowCredentials(true);
+                return cfg;
+            }))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/products/**", "/uploads/**").permitAll()
-                .requestMatchers("/api/orders/**", "/api/cart/**").authenticated()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
+
+                // ✅ Public product APIs
+                .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+
+                // ✅ Seller & Admin: Add, Edit, and Delete
+                .requestMatchers(HttpMethod.POST, "/api/products/add").hasAnyAuthority("SELLER", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyAuthority("SELLER", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyAuthority("SELLER", "ADMIN")
+
+                // ✅ User APIs
+                .requestMatchers("/api/orders/**", "/api/user/**", "/api/wishlist/**").hasAuthority("USER")
+
+                // ✅ Admin APIs
+                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                .requestMatchers("/api/analytics/**").hasAuthority("ADMIN")
+
                 .anyRequest().authenticated()
             )
-            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            // 3. Now this line will work perfectly
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-        
+            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

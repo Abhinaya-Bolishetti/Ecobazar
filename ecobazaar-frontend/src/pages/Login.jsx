@@ -3,78 +3,62 @@ import api from "../api/api";
 import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [user, setUser] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
-  const login = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
     try {
-      const res = await api.post("/api/auth/login", { username, password });
+      const response = await api.post("/auth/login", {
+        username: user.email,
+        password: user.password,
+      });
 
-      // Save Token and Role for Security Configuration
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("userRole", res.data.role); // Important for Seller/User logic
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("role", response.data.role);
 
-      alert("Welcome back to EcoBazaar!");
-      navigate("/products");
+      alert("Login Successful!");
+
+      if (response.data.role === "ADMIN") navigate("/admin-dashboard");
+      else if (response.data.role === "SELLER") navigate("/seller-dashboard");
+      else navigate("/products");
     } catch (err) {
-      setError("Invalid username or password. Please try again.");
+      alert(err.response?.data || "Invalid credentials");
     }
   };
 
   return (
-    <div style={containerStyle}>
-      <div style={cardStyle}>
-        <div style={headerStyle}>
-          <h2 style={{ color: "#2e7d32", margin: "0" }}>🌿 EcoBazaar Login</h2>
-          <p style={{ fontSize: "0.85rem", color: "#666" }}>
-            Welcome back, Eco-Warrior!
-          </p>
-        </div>
+    <div style={container}>
+      <div style={card}>
+        <img src="/logo.png" alt="EcoBazaar" style={logo} />
 
-        {error && <p style={errorStyle}>{error}</p>}
+        <h2 style={title}>Welcome Back</h2>
+        <p style={subtitle}>Login to continue your eco journey 🌿</p>
 
-        <form onSubmit={login} style={formStyle}>
-          <div style={inputGroupStyle}>
-            <label style={labelStyle}>Username</label>
-            <input
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              style={inputStyle}
-              required
-            />
-          </div>
-
-          <div style={inputGroupStyle}>
-            <label style={labelStyle}>Password</label>
-            <input
-              placeholder="••••••••"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={inputStyle}
-              required
-            />
-          </div>
-
-          <button style={buttonStyle}>Sign In</button>
+        <form onSubmit={handleLogin} style={formStyle}>
+          <input
+            type="email"
+            placeholder="Email"
+            style={inputStyle}
+            onChange={(e) => setUser({ ...user, email: e.target.value })}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            style={inputStyle}
+            onChange={(e) => setUser({ ...user, password: e.target.value })}
+            required
+          />
+          <button type="submit" style={buttonStyle}>
+            Login
+          </button>
         </form>
 
-        <p style={footerStyle}>
-          Don't have an account?{" "}
-          <Link
-            to="/register"
-            style={{
-              color: "#2e7d32",
-              fontWeight: "bold",
-              textDecoration: "none",
-            }}
-          >
-            Register here
+        <p style={footerText}>
+          New here?{" "}
+          <Link to="/register" style={link}>
+            Create an account
           </Link>
         </p>
       </div>
@@ -82,86 +66,76 @@ function Login() {
   );
 }
 
-// --- Enhanced Styles ---
+// ---- Styles ----
 
-const containerStyle = {
+const container = {
   minHeight: "100vh",
+  backgroundImage: "url('/background.png')", // ✅ from public
+  backgroundSize: "cover",
+  backgroundPosition: "center",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  background: "linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%)",
 };
 
-const cardStyle = {
-  background: "white",
+const card = {
+  background: "rgba(255,255,255,0.92)",
   padding: "40px",
   borderRadius: "16px",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-  width: "100%",
-  maxWidth: "380px",
+  width: "360px",
+  textAlign: "center",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
 };
 
-const headerStyle = {
-  textAlign: "center",
-  marginBottom: "25px",
+const logo = {
+  width: "80px",
+  marginBottom: "10px",
+};
+
+const title = {
+  margin: "10px 0 5px",
+  color: "#2e7d32",
+};
+
+const subtitle = {
+  marginBottom: "20px",
+  color: "#555",
+  fontSize: "0.95rem",
 };
 
 const formStyle = {
   display: "flex",
   flexDirection: "column",
-  gap: "15px",
-};
-
-const inputGroupStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "5px",
-};
-
-const labelStyle = {
-  fontSize: "0.8rem",
-  fontWeight: "bold",
-  color: "#555",
-  marginLeft: "5px",
+  gap: "14px",
 };
 
 const inputStyle = {
   padding: "12px",
   borderRadius: "8px",
-  border: "1px solid #ddd",
-  fontSize: "1rem",
-  outline: "none",
+  border: "1px solid #ccc",
+  fontSize: "0.95rem",
 };
 
 const buttonStyle = {
-  width: "100%",
-  padding: "12px",
   background: "#2e7d32",
   color: "white",
+  padding: "12px",
   border: "none",
   borderRadius: "8px",
-  cursor: "pointer",
-  fontWeight: "bold",
   fontSize: "1rem",
+  cursor: "pointer",
   marginTop: "10px",
-  transition: "0.3s",
 };
 
-const errorStyle = {
-  color: "#d32f2f",
-  background: "#ffebee",
-  padding: "10px",
-  borderRadius: "6px",
-  fontSize: "0.85rem",
-  textAlign: "center",
-  marginBottom: "15px",
-};
-
-const footerStyle = {
-  textAlign: "center",
-  marginTop: "25px",
+const footerText = {
+  marginTop: "15px",
   fontSize: "0.9rem",
-  color: "#666",
+};
+
+const link = {
+  color: "#2e7d32",
+  fontWeight: "bold",
+  textDecoration: "none",
 };
 
 export default Login;

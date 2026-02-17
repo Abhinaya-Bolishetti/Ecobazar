@@ -14,11 +14,23 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/api/auth/register", user);
+      const registrationData = {
+        username: user.email,
+        email: user.email,
+        password: user.password,
+        role: user.role,
+      };
+
+      await api.post("/auth/register", registrationData);
+
       alert("Registration Successful! Please Login.");
       navigate("/login");
     } catch (err) {
-      alert("Registration failed. Email might already exist.");
+      console.error("Registration Error:", err.response?.data);
+      alert(
+        err.response?.data ||
+          "Registration failed. Check if the backend is running.",
+      );
     }
   };
 

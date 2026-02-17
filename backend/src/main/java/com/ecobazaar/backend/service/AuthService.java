@@ -16,22 +16,29 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public String register(SignupRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email is already taken!");
+    // ✅ Fixes the error in AuthController
+    public User registerUser(SignupRequest signupRequest) {
+        if (userRepository.existsByEmail(signupRequest.getEmail())) {
+            throw new RuntimeException("Email is already registered!");
         }
 
         User user = new User();
-        user.setUsername(request.getEmail());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
+        user.setUsername(signupRequest.getUsername());
+        user.setEmail(signupRequest.getEmail());
         
-        userRepository.save(user);
-        return "User registered successfully";
+        // Hash the password before saving!
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        
+        user.setRole(signupRequest.getRole());
+        user.setStatus("PENDING"); // Required for Milestone 4 Admin Dashboard
+
+        return userRepository.save(user);
     }
 
+    
+
     public boolean validatePassword(String rawPassword, String encodedPassword) {
+        // passwordEncoder.matches(raw, hashed) is the ONLY way to check BCrypt
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }

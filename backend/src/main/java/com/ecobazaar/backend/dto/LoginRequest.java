@@ -1,8 +1,10 @@
 package com.ecobazaar.backend.dto;
 
 public class LoginRequest {
-    private String username;
+    private String username; // The backend uses this field for the email
     private String password;
+
+    public LoginRequest() {}
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }

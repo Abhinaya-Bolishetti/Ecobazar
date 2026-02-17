@@ -9,4 +9,7 @@ import java.util.List;
 public interface WishlistItemRepository extends JpaRepository<WishlistItem, Long> {
     List<WishlistItem> findByUser(User user);
     boolean existsByUserAndProduct(User user, Product product);
+
+    // 🔥 ADD THIS
+    void deleteByProduct(Product product);
 }

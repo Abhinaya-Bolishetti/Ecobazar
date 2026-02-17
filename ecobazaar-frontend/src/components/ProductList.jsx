@@ -68,13 +68,15 @@ const ProductCard = ({ product, userRole }) => {
     }
   };
 
-  const deleteProduct = async (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         await api.delete(`/api/products/${id}`);
-        window.location.reload(); // Refresh to show changes
+        alert("Deleted successfully!");
+        fetchProducts(); // ✅ Refresh the list so it disappears from UI
       } catch (err) {
-        alert("Delete failed");
+        console.error(err);
+        alert("Delete failed. Check permissions.");
       }
     }
   };
