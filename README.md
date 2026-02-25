@@ -1,92 +1,134 @@
 # 🌿 EcoBazaar  
-**Your Gateway to Sustainable Shopping**  
-*A modern full-stack marketplace for environmentally conscious consumers and eco-friendly sellers.*
+**A Smart Marketplace for Sustainable Living**
 
-**Tech Stack:** Java (Spring Boot) • React • MySQL • JWT  
-**License:** MIT  
+EcoBazaar is a full-stack eco-commerce platform designed to encourage **responsible shopping** by showcasing **environment-friendly products**, **carbon impact metrics**, and **eco badges**. The platform connects conscious buyers with eco-friendly sellers, while administrators ensure quality through moderation and analytics.
 
 ---
 
-## 📖 About the Project  
-**EcoBazaar** is a full-stack e-commerce platform built to bridge the gap between **sustainability and online shopping**. The platform features eco-friendly products with **carbon impact**, **eco certification**, and **role-based workflows** to ensure quality and transparency.
-
-**What makes EcoBazaar unique:**
-- 🌱 Curated marketplace for sustainable products  
-- 🏷️ Eco-certification & carbon impact visibility  
-- 🛡️ Admin moderation for sellers & products  
-- ⚡ Modern, scalable tech stack  
+## 🚀 Project Status  
+✅ **Milestone 4 Completed** – Core features, admin workflows, analytics, AI modules, and UI enhancements implemented.
 
 ---
 
-## 🎯 Features
-
-### 🔐 Authentication & User Management  
-- Secure registration & login  
-- JWT-based authentication  
-- Role-based access (ADMIN, SELLER, USER)  
-- Personalized dashboards  
-
-### 🛍️ Marketplace  
-- Multi-vendor product listings  
-- Product images, eco-certification, carbon impact  
-- Admin approval workflow for products  
-- Product search & browsing  
-
-### 🛒 Cart, Orders & Wishlist  
-- Real-time cart management  
-- Wishlist  
-- Order placement  
-- Order history & order details  
-- Carbon impact summary for carts & orders  
-
-### 🧑‍🌾 Seller Dashboard  
-- Add, edit, delete products  
-- View own products  
-- Submit products for admin approval  
-
-### 🛡️ Admin Dashboard  
-- Approve/reject sellers  
-- Approve/reject products  
-- View platform analytics  
-- Global carbon impact leaderboard  
-
-### 🌍 Sustainability  
-- Carbon impact tracking  
-- Eco badges (Green Starter, Carbon Saver, Eco Hero)  
-- Sustainability reports & analytics  
-
----
-
-## 💻 Tech Stack
+## 🧩 Technology Stack
 
 ### Backend  
-- **Framework:** Spring Boot 3.x  
-- **Language:** Java 17+  
-- **Database:** MySQL  
-- **Security:** Spring Security + JWT  
-- **ORM:** Spring Data JPA (Hibernate)  
-- **Build Tool:** Maven  
-- **API Style:** RESTful  
+- Java 17  
+- Spring Boot  
+- Spring Data JPA (Hibernate)  
+- Spring Security  
+- MySQL  
+- JWT-based Authentication  
+- RESTful APIs  
 
 ### Frontend  
-- **Library:** React 18  
-- **Routing:** React Router v6  
-- **HTTP Client:** Axios  
-- **Styling:** CSS3  
-- **Package Manager:** npm  
+- React  
+- Axios  
+- React Router  
+- HTML, CSS, JavaScript  
 
 ---
 
-## 🚦 Quick Start
+## ✨ Key Features
 
-### ✅ Prerequisites  
-- Java 17+  
-- Maven 3.6+  
-- MySQL 8.0+  
-- Node.js 16+  
-- npm  
+### 👤 User & Role Management  
+- Secure user registration and login  
+- Password encryption using BCrypt  
+- JWT authentication for session management  
+- Role-based access: **USER, SELLER, ADMIN**  
+- Personalized dashboards  
+
+### 🛍️ Product Marketplace  
+- Sellers can add, edit, and manage eco-products  
+- Product images, descriptions, and carbon impact display  
+- Eco-certification indicator  
+- Admin approval workflow for product publishing  
+- Only verified products are visible to customers  
+
+### 🛒 Cart, Orders & Wishlist  
+- Add/remove items from cart  
+- Wishlist management  
+- Place orders with order confirmation  
+- View order history and detailed order view  
+- Carbon impact summary for carts and orders  
+
+### 🛡️ Admin Panel  
+- Approve or reject seller registrations  
+- Approve or reject product listings  
+- View platform statistics (users, sellers, products)  
+- Global carbon impact leaderboard  
+
+### 🌱 Sustainability & Analytics  
+- Carbon impact calculation and aggregation  
+- Eco badges for users (e.g., Green Starter, Carbon Saver, Eco Hero)  
+- User analytics dashboard (monthly carbon savings)  
+- Downloadable sustainability reports  
+
+### 🤖 AI Features  
+- AI-based chatbot for user assistance  
+- AI-powered sustainability insights and reports  
+- Recommendation module for eco-friendly alternatives  
+
+### 🔐 Security  
+- Spring Security integration  
+- JWT-based protected endpoints  
+- Role-based authorization for APIs  
+
+---
+
+## 🗂️ Project Structure
+
+- `backend/` – Spring Boot REST API  
+- `ecobazaar-frontend/` – React frontend application  
+- `database/` – MySQL schema/configuration (if applicable)  
+
+---
+
+## ⚙️ Run the Project Locally
 
 ### ▶️ Backend  
 ```bash
 cd backend
 mvn spring-boot:run
+````
+
+Backend runs on: `http://localhost:8082`
+
+### ▶️ Frontend
+
+```bash
+cd ecobazaar-frontend
+npm install
+npm start
+```
+
+Frontend runs on: `http://localhost:3000`
+
+---
+
+## 📌 Completed Milestones (Up to Milestone 4)
+
+* ✅ Authentication & Authorization (JWT, Roles)
+* ✅ Product management (Seller + Admin approval)
+* ✅ Cart, Wishlist & Orders
+* ✅ Admin dashboards & analytics
+* ✅ Sustainability features (carbon impact, eco badges)
+* ✅ AI chatbot & recommendation modules
+* ✅ UI improvements and role-based navigation
+
+---
+
+## 🔮 Future Scope
+
+* Payment gateway integration
+* Real-time notifications (email/SMS)
+* Cloud deployment (AWS/Azure)
+* Mobile application version
+* Advanced AI recommendations and insights
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**.
+
