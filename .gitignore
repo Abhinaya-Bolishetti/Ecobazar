@@ -1,0 +1,15 @@
+# Java / Maven
+backend/bin/
+backend/target/
+
+# Node
+ecobazaar-frontend/node_modules/
+ecobazaar-frontend/build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
